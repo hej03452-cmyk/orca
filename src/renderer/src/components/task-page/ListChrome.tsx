@@ -4,6 +4,7 @@ import { TaskPageSourceBar } from './SourceBar'
 import { AlertCircle } from 'lucide-react'
 import { TaskPageGitHubModeControls } from './github/ModeControls'
 import { TaskPageProviderFilters } from './ProviderFilters'
+import { TaskPageGiteeModeControls } from './gitee/ModeControls'
 export function TaskPageListChrome({
   model
 }: {
@@ -28,6 +29,7 @@ export function TaskPageListChrome({
           ) : null}
 
           <TaskPageGitHubModeControls model={model} />
+          <TaskPageGiteeModeControls model={model} />
 
           <TaskPageProviderFilters model={model} />
         </div>

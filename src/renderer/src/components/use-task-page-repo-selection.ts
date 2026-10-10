@@ -41,7 +41,16 @@ export function useTaskPageRepoSelection(model: TaskPageStoreBindingsModel) {
     preflightStatusCurrent,
     linearConnected
   } = model
-  const eligibleRepos = useMemo(() => getTaskEligibleRepos(repos), [repos])
+  const eligibleRepos = useMemo(() => {
+    const eligible = getTaskEligibleRepos(repos)
+    if (pageData.taskSource !== 'gitee') {
+      return eligible
+    }
+    return eligible.filter((repo) => {
+      const remoteUrl = repo.gitRemoteIdentity?.remoteUrl?.trim() ?? ''
+      return /(?:^|[/:@])gitee\.com[/:]/i.test(remoteUrl)
+    })
+  }, [pageData.taskSource, repos])
 
   // Why: initial selection precedence — explicit preselection > persisted defaultRepoSelection > all eligible; preselection wins so "open tasks for this repo" lands single-repo.
   const resolvedInitialSelection = useMemo<ReadonlySet<string>>(() => {
@@ -140,7 +149,8 @@ export function useTaskPageRepoSelection(model: TaskPageStoreBindingsModel) {
         preferredVisibleTaskProviders,
         {
           gitlabInstalled: preflightStatusCurrent && preflightStatus?.glab?.installed === true,
-          linearConnected: linearConnected === true
+          linearConnected: linearConnected === true,
+          giteeConfigured: preflightStatusCurrent && preflightStatus?.gitee?.authenticated === true
         },
         defaultTaskSource
       ),
@@ -149,7 +159,8 @@ export function useTaskPageRepoSelection(model: TaskPageStoreBindingsModel) {
       linearConnected,
       preferredVisibleTaskProviders,
       preflightStatusCurrent,
-      preflightStatus?.glab?.installed
+      preflightStatus?.glab?.installed,
+      preflightStatus?.gitee?.authenticated
     ]
   )
   const sourceOptions = getSourceOptions()

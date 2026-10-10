@@ -97,6 +97,12 @@ async function requestJsonAtBase<T>(
     })
     if (!response.ok) {
       await cancelUnreadResponseBody(response)
+      // A branch review lookup commonly races repository removal or a forge
+      // instance that does not expose pull requests; treat HTTP 404 as no review
+      // instead of turning a normal empty lookup into a repeated background error.
+      if (response.status === 404) {
+        return null
+      }
       if (throwOnFailure) {
         throw new Error(`Gitea request failed: HTTP ${response.status}`)
       }

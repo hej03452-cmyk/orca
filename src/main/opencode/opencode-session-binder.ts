@@ -1,4 +1,5 @@
 import { resolveOpenCodeDataDirectory } from './opencode-data-directory'
+import { existsSync } from 'node:fs'
 import {
   bindOpenCodeSession,
   type OpenCodeSessionBinding
@@ -233,6 +234,9 @@ export function listOpenCodeDbSessions(
   dbPath: string,
   cursor: OpenCodeSessionCursor
 ): BinderSessionRow[] {
+  if (!existsSync(dbPath)) {
+    return []
+  }
   try {
     return readOpenCodeDatabase({
       dbPath,

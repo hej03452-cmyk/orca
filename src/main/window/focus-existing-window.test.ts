@@ -1,6 +1,6 @@
 import type { App, BrowserWindow } from 'electron'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { focusExistingMainWindow } from './focus-existing-window'
+import { focusExistingMainWindow, safelyRevealWindow } from './focus-existing-window'
 
 type FakeWindowOptions = {
   destroyed?: boolean
@@ -87,6 +87,17 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs())
 
 describe('focusExistingMainWindow', () => {
+  it('reveals an explicitly user-opened tray window during a background launch', () => {
+    vi.stubEnv('ORCA_BACKGROUND_LAUNCH', '1')
+    const window = makeFakeWindow({ minimized: true, visible: false })
+
+    safelyRevealWindow(window, { userInitiated: true })
+
+    expect(window.calls.restore).toHaveBeenCalledOnce()
+    expect(window.calls.show).toHaveBeenCalledOnce()
+    expect(window.calls.focus).toHaveBeenCalledOnce()
+  })
+
   it.each(['darwin', 'linux', 'win32'] as const)(
     'never restores or activates a background window on %s',
     (platform) => {

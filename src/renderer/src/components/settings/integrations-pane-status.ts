@@ -7,7 +7,14 @@ export type GlabStatus = GhStatus
 export type BitbucketStatus = 'checking' | 'connected' | 'not-configured' | 'not-authenticated'
 export type AzureDevOpsStatus = 'checking' | 'configured' | 'not-configured' | 'not-authenticated'
 export type GiteaStatus = 'checking' | 'configured' | 'not-configured' | 'not-authenticated'
-export type PreflightRefreshProvider = 'gh' | 'glab' | 'bitbucket' | 'azureDevOps' | 'gitea'
+export type GiteeStatus = GiteaStatus
+export type PreflightRefreshProvider =
+  | 'gh'
+  | 'glab'
+  | 'bitbucket'
+  | 'azureDevOps'
+  | 'gitea'
+  | 'gitee'
 
 export type PreflightIntegrationStatuses = {
   ghStatus: GhStatus
@@ -20,6 +27,9 @@ export type PreflightIntegrationStatuses = {
   giteaStatus: GiteaStatus
   giteaAccount: string | null
   giteaBaseUrl: string | null
+  giteeStatus: GiteeStatus
+  giteeAccount: string | null
+  giteeBaseUrl: string | null
 }
 
 type TokenApiPreflightStatus = {
@@ -37,6 +47,7 @@ type GiteaPreflightStatus = {
   baseUrl: string | null
   tokenConfigured: boolean
 }
+type GiteePreflightStatus = GiteaPreflightStatus
 
 export function tokenApiStatusFromPreflight(
   status: TokenApiPreflightStatus | undefined
@@ -54,6 +65,15 @@ export function tokenApiStatusFromPreflight(
 }
 
 export function giteaStatusFromPreflight(status: GiteaPreflightStatus | undefined): GiteaStatus {
+  if (!status?.configured) {
+    return 'not-configured'
+  }
+  if (status.tokenConfigured && !status.authenticated) {
+    return 'not-authenticated'
+  }
+  return 'configured'
+}
+export function giteeStatusFromPreflight(status: GiteePreflightStatus | undefined): GiteeStatus {
   if (!status?.configured) {
     return 'not-configured'
   }
@@ -107,13 +127,17 @@ export function getPreflightIntegrationStatuses(
       azureDevOpsBaseUrl: null,
       giteaStatus: 'checking',
       giteaAccount: null,
-      giteaBaseUrl: null
+      giteaBaseUrl: null,
+      giteeStatus: 'checking',
+      giteeAccount: null,
+      giteeBaseUrl: null
     }
   }
 
   const bitbucket = preflightStatus.bitbucket
   const azureDevOps = preflightStatus.azureDevOps
   const gitea = preflightStatus.gitea
+  const gitee = preflightStatus.gitee
   return {
     ghStatus: maybeChecking('gh', refreshingProviders, ghStatusFromPreflight(preflightStatus.gh)),
     glabStatus: maybeChecking(
@@ -136,6 +160,9 @@ export function getPreflightIntegrationStatuses(
     azureDevOpsBaseUrl: azureDevOps?.baseUrl ?? null,
     giteaStatus: maybeChecking('gitea', refreshingProviders, giteaStatusFromPreflight(gitea)),
     giteaAccount: gitea?.account ?? null,
-    giteaBaseUrl: gitea?.baseUrl ?? null
+    giteaBaseUrl: gitea?.baseUrl ?? null,
+    giteeStatus: maybeChecking('gitee', refreshingProviders, giteeStatusFromPreflight(gitee)),
+    giteeAccount: gitee?.account ?? null,
+    giteeBaseUrl: gitee?.baseUrl ?? null
   }
 }

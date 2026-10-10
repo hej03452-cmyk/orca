@@ -89,6 +89,12 @@ export function registerFilesystemGitStatusHandlers(context: FilesystemHandlerCo
           ...gitOptions,
           ...(sharedLinkPaths.length > 0 ? { sharedLinkPaths } : {})
         })
+      } catch (error) {
+        // Why: replacing a polling request intentionally aborts the old Git process. Resolve the IPC call so Electron does not report an expected cancellation as a handler failure; the renderer still drops the result because its signal is aborted.
+        if (isGitStatusAbortError(error)) {
+          return { entries: [], conflictOperation: 'unknown' }
+        }
+        throw error
       } finally {
         gitStatusCancellations.finish(event, args.requestToken, controller)
       }
@@ -309,4 +315,8 @@ export function registerFilesystemGitStatusHandlers(context: FilesystemHandlerCo
       })
     }
   )
+}
+
+function isGitStatusAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError'
 }

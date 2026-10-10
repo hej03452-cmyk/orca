@@ -138,6 +138,7 @@ describe('TasksPane', () => {
         visible: true
       },
       jira: { connected: false, checking: false, visible: false }
+      ,gitee: { connected: true, checking: false, visible: true }
     }
   })
 

@@ -41,6 +41,7 @@ export const WorktreeCreate = z
     linkedBitbucketPR: TriStateLinkedIssue,
     linkedAzureDevOpsPR: TriStateLinkedIssue,
     linkedGiteaPR: TriStateLinkedIssue,
+    linkedGiteePR: TriStateLinkedIssue,
     linkedWorkItem: WorkspaceLinkedItemSchema.nullable().optional(),
     linkedTaskSourceContext: TaskSourceContextSchema.nullable().optional(),
     comment: OptionalString,

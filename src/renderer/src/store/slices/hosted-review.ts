@@ -205,7 +205,8 @@ export const createHostedReviewSlice: StateCreator<AppState, [], [], HostedRevie
             linkedGitLabMR: options?.linkedGitLabMR ?? null,
             linkedBitbucketPR: options?.linkedBitbucketPR ?? null,
             linkedAzureDevOpsPR: options?.linkedAzureDevOpsPR ?? null,
-            linkedGiteaPR: options?.linkedGiteaPR ?? null
+            linkedGiteaPR: options?.linkedGiteaPR ?? null,
+            linkedGiteePR: options?.linkedGiteePR ?? null
           }
           const review =
             target.kind === 'environment'

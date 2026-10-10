@@ -27,6 +27,7 @@ type LinkedReviewNumbers = {
   linkedBitbucketPR: number | null
   linkedAzureDevOpsPR: number | null
   linkedGiteaPR: number | null
+  linkedGiteePR: number | null
 }
 
 export type WorktreeCardPrDisplay =
@@ -45,6 +46,7 @@ type WorktreeCardPrDisplayOptions = {
   /** GitHub PR number proven by a branch-scoped lookup. */
   branchLookupGitHubPRNumber?: number | null
   suppressedGitHubPR?: number | null
+  linkedGiteePR?: number | null
 }
 
 function getLinkedReviewNumber(
@@ -62,6 +64,8 @@ function getLinkedReviewNumber(
       return links.linkedAzureDevOpsPR
     case 'gitea':
       return links.linkedGiteaPR
+    case 'gitee':
+      return links.linkedGiteePR
   }
 }
 
@@ -94,7 +98,8 @@ export function getWorktreeCardPrDisplay(
     linkedGitLabMR,
     linkedBitbucketPR,
     linkedAzureDevOpsPR,
-    linkedGiteaPR
+    linkedGiteaPR,
+    linkedGiteePR: options.linkedGiteePR ?? null
   }
   const hasLinkedReview =
     linkedPR !== null ||

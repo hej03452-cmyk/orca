@@ -1,6 +1,8 @@
 import type { TaskPageComposerActionsModel } from '../use-task-page-composer-actions'
 import { TaskPageFrame } from './Frame'
 import { TaskPageGitHubIssueDialog } from './github/IssueDialog'
+import { TaskPageGiteeIssueDialog } from './gitee/IssueDialog'
+import { TaskPageGiteePullRequestDialog } from './gitee/PullRequestDialog'
 import { TaskPageLinearProjectDialog } from './linear/ProjectDialog'
 import { TaskPageLinearIssueDialog } from './linear/IssueDialog'
 import { TaskPageJiraIssueDialog } from './jira/IssueDialog'
@@ -17,6 +19,10 @@ export function TaskPageSurface({
       <TaskPageFrame model={model} />
 
       <TaskPageGitHubIssueDialog model={model} />
+
+      <TaskPageGiteeIssueDialog model={model} />
+
+      <TaskPageGiteePullRequestDialog model={model} />
 
       <TaskPageLinearProjectDialog model={model} />
 

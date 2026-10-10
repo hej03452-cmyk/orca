@@ -23,6 +23,13 @@ export const preflightApi = {
       baseUrl: string | null
       tokenConfigured: boolean
     }
+    gitee?: {
+      configured: boolean
+      authenticated: boolean
+      account: string | null
+      baseUrl: string
+      tokenConfigured: boolean
+    }
     linear: { connected: boolean }
   }> => ipcRenderer.invoke('preflight:check', args),
   detectAgents: (args?: PreflightRuntimeContext): Promise<string[]> =>

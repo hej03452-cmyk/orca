@@ -5,6 +5,7 @@ import type { MRInfo } from '../../shared/gitlab-types'
 import type { AzureDevOpsPullRequestInfo } from '../azure-devops/pull-request-mappers'
 import type { BitbucketPullRequestInfo } from '../bitbucket/pull-request-mappers'
 import type { GiteaPullRequestInfo } from '../gitea/pull-request-mappers'
+import type { GiteePullRequestInfo } from '../gitee/pull-request-mappers'
 
 export function mapGitHubReview(pr: PRInfo): HostedReviewInfo {
   return hostedReviewInfoFromGitHubPRInfo(pr)
@@ -64,6 +65,20 @@ export function mapAzureDevOpsReview(pr: AzureDevOpsPullRequestInfo): HostedRevi
 export function mapGiteaReview(pr: GiteaPullRequestInfo): HostedReviewInfo {
   return {
     provider: 'gitea',
+    number: pr.number,
+    title: pr.title,
+    state: pr.state,
+    url: pr.url,
+    status: pr.status,
+    updatedAt: pr.updatedAt,
+    mergeable: pr.mergeable,
+    ...(pr.headSha ? { headSha: pr.headSha } : {})
+  }
+}
+
+export function mapGiteeReview(pr: GiteePullRequestInfo): HostedReviewInfo {
+  return {
+    provider: 'gitee',
     number: pr.number,
     title: pr.title,
     state: pr.state,

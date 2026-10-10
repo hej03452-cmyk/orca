@@ -13,6 +13,12 @@ export type GitLabTaskProviderIdentity = {
   project?: string | null
   webUrl?: string | null
 }
+export type GiteeTaskProviderIdentity = {
+  provider: 'gitee'
+  owner?: string | null
+  repo?: string | null
+  webUrl?: string | null
+}
 
 export type LinearTaskProviderIdentity = {
   provider: 'linear'
@@ -32,6 +38,7 @@ export type JiraTaskProviderIdentity = {
 export type TaskProviderIdentity =
   | GitHubTaskProviderIdentity
   | GitLabTaskProviderIdentity
+  | GiteeTaskProviderIdentity
   | LinearTaskProviderIdentity
   | JiraTaskProviderIdentity
 
@@ -62,6 +69,13 @@ export function normalizeTaskProviderIdentity(
         projectId: normalizeNonEmptyString(raw.projectId),
         namespace: normalizeNonEmptyString(raw.namespace),
         project: normalizeNonEmptyString(raw.project),
+        webUrl: normalizeNonEmptyString(raw.webUrl)
+      }
+    case 'gitee':
+      return {
+        provider,
+        owner: normalizeNonEmptyString(raw.owner),
+        repo: normalizeNonEmptyString(raw.repo),
         webUrl: normalizeNonEmptyString(raw.webUrl)
       }
     case 'linear':
@@ -106,6 +120,8 @@ export function isStoredTaskProviderIdentity(provider: TaskProvider, identity: u
       return ['projectId', 'namespace', 'project', 'webUrl'].every((key) =>
         isNullableOptionalString(raw[key])
       )
+    case 'gitee':
+      return ['owner', 'repo', 'webUrl'].every((key) => isNullableOptionalString(raw[key]))
     case 'linear':
       return ['workspaceId', 'workspaceName', 'teamId', 'teamKey'].every((key) =>
         isNullableOptionalString(raw[key])
@@ -118,6 +134,7 @@ export function isStoredTaskProviderIdentity(provider: TaskProvider, identity: u
 const TASK_PROVIDER_IDENTITY_FIELDS: Record<TaskProvider, readonly string[]> = {
   github: ['owner', 'repo', 'host'],
   gitlab: ['projectId', 'namespace', 'project', 'webUrl'],
+  gitee: ['owner', 'repo', 'webUrl'],
   linear: ['workspaceId', 'workspaceName', 'teamId', 'teamKey'],
   jira: ['siteId', 'siteUrl', 'projectKey']
 }
@@ -153,6 +170,8 @@ export function taskProviderIdentityCachePart(
       return githubRepoIdentityKey(identity)
     case 'gitlab':
       return identity.projectId ?? [identity.namespace, identity.project].filter(Boolean).join('/')
+    case 'gitee':
+      return [identity.owner, identity.repo].filter(Boolean).join('/')
     case 'linear':
       return [identity.workspaceId, identity.teamId ?? identity.teamKey].filter(Boolean).join('/')
     case 'jira':

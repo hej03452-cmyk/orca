@@ -5,6 +5,9 @@ import type { GitLabTaskFilter, GitLabIssueFilter } from '@/components/task-page
 import type { GitLabWorkItem, GitLabTodo } from '../../../shared/gitlab-types'
 import { getRepoBackedTaskEmptyState } from '@/components/task-page-empty-state'
 import { isGitLabIssueFilter, isGitLabMRFilter } from './task-page-source-context'
+import type { GiteeTaskItem } from '../../../shared/gitee-issue-types'
+import type { GiteePullRequestInfo } from '../../../shared/gitee-pull-request-types'
+import type { GiteeProjectInfo } from '../../../shared/gitee-project-types'
 export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel) {
   const {
     settings,
@@ -65,6 +68,31 @@ export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel)
   const [gitlabRefreshNonce, setGitlabRefreshNonce] = useState(0)
   // Why: separate from gitlabItems so the dialog target survives a list refresh that removes the item from the visible filter (e.g. closing an MR).
   const [gitlabDialogItem, setGitlabDialogItem] = useState<GitLabWorkItem | null>(null)
+  const [giteeItems, setGiteeItems] = useState<GiteeTaskItem[]>([])
+  const [giteeLoading, setGiteeLoading] = useState(false)
+  const [giteeError, setGiteeError] = useState<string | null>(null)
+  const [selectedGiteeItem, setSelectedGiteeItem] = useState<GiteeTaskItem | null>(null)
+  const [giteeMode, setGiteeMode] = useState<'issues' | 'prs' | 'projects'>('issues')
+  const [giteePullRequests, setGiteePullRequests] = useState<GiteePullRequestInfo[]>([])
+  const [giteeRefreshNonce, setGiteeRefreshNonce] = useState(0)
+  const [giteeProjects, setGiteeProjects] = useState<GiteeProjectInfo[]>([])
+  const [giteeFilter, setGiteeFilter] = useState<'open' | 'all' | 'progressing' | 'closed' | 'rejected'>('open')
+  const [giteeSearch, setGiteeSearch] = useState('')
+  const [giteeNewIssueOpen, setGiteeNewIssueOpen] = useState(false)
+  const [giteeNewIssueTitle, setGiteeNewIssueTitle] = useState('')
+  const [giteeNewIssueBody, setGiteeNewIssueBody] = useState('')
+  const [giteeNewIssueSubmitting, setGiteeNewIssueSubmitting] = useState(false)
+  const [giteeNewIssueRepoId, setGiteeNewIssueRepoId] = useState<string | null>(null)
+  const [giteeNewPullRequestOpen, setGiteeNewPullRequestOpen] = useState(false)
+  const [giteeNewPullRequestTitle, setGiteeNewPullRequestTitle] = useState('')
+  const [giteeNewPullRequestBody, setGiteeNewPullRequestBody] = useState('')
+  const [giteeNewPullRequestBase, setGiteeNewPullRequestBase] = useState('main')
+  const [giteeNewPullRequestHead, setGiteeNewPullRequestHead] = useState('')
+  const [giteeNewPullRequestSubmitting, setGiteeNewPullRequestSubmitting] = useState(false)
+  const giteeNewIssueTargetRepo = useMemo(
+    () => selectedRepos.find((repo) => repo.id === giteeNewIssueRepoId) ?? selectedRepos[0] ?? null,
+    [giteeNewIssueRepoId, selectedRepos]
+  )
 
   // Why: GitLab tab has two sub-views — the project MR/issue list and the user's cross-project Todos (a separate stream).
   const [gitlabView, setGitlabView] = useState<'issues' | 'mrs' | 'todos'>('mrs')
@@ -99,6 +127,8 @@ export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel)
     }
     return gitlabItems
   }, [gitlabItems, gitlabView])
+  // SAFETY: this staged hook augments the previous model with the state created above.
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: staged hook model is augmented with the state fields declared below.
   const nextModel = model as typeof model & {
     taskSourceManuallyChangedRef: typeof taskSourceManuallyChangedRef
     lastPageTaskSourceRef: typeof lastPageTaskSourceRef
@@ -134,6 +164,49 @@ export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel)
     gitlabFilterIsValid: typeof gitlabFilterIsValid
     activeGitlabFilter: typeof activeGitlabFilter
     displayedGitLabItems: typeof displayedGitLabItems
+    giteeItems: typeof giteeItems
+    setGiteeItems: typeof setGiteeItems
+    giteeLoading: typeof giteeLoading
+    setGiteeLoading: typeof setGiteeLoading
+    giteeError: typeof giteeError
+    setGiteeError: typeof setGiteeError
+    selectedGiteeItem: typeof selectedGiteeItem
+    setSelectedGiteeItem: typeof setSelectedGiteeItem
+    giteeMode: typeof giteeMode
+    setGiteeMode: typeof setGiteeMode
+    giteePullRequests: typeof giteePullRequests
+    setGiteePullRequests: typeof setGiteePullRequests
+    giteeRefreshNonce: typeof giteeRefreshNonce
+    setGiteeRefreshNonce: typeof setGiteeRefreshNonce
+    giteeProjects: typeof giteeProjects
+    setGiteeProjects: typeof setGiteeProjects
+    giteeFilter: typeof giteeFilter
+    setGiteeFilter: typeof setGiteeFilter
+    giteeSearch: typeof giteeSearch
+    setGiteeSearch: typeof setGiteeSearch
+    giteeNewIssueOpen: typeof giteeNewIssueOpen
+    setGiteeNewIssueOpen: typeof setGiteeNewIssueOpen
+    giteeNewIssueTitle: typeof giteeNewIssueTitle
+    setGiteeNewIssueTitle: typeof setGiteeNewIssueTitle
+    giteeNewIssueBody: typeof giteeNewIssueBody
+    setGiteeNewIssueBody: typeof setGiteeNewIssueBody
+    giteeNewIssueSubmitting: typeof giteeNewIssueSubmitting
+    setGiteeNewIssueSubmitting: typeof setGiteeNewIssueSubmitting
+    giteeNewIssueRepoId: typeof giteeNewIssueRepoId
+    setGiteeNewIssueRepoId: typeof setGiteeNewIssueRepoId
+    giteeNewIssueTargetRepo: typeof giteeNewIssueTargetRepo
+    giteeNewPullRequestOpen: typeof giteeNewPullRequestOpen
+    setGiteeNewPullRequestOpen: typeof setGiteeNewPullRequestOpen
+    giteeNewPullRequestTitle: typeof giteeNewPullRequestTitle
+    setGiteeNewPullRequestTitle: typeof setGiteeNewPullRequestTitle
+    giteeNewPullRequestBody: typeof giteeNewPullRequestBody
+    setGiteeNewPullRequestBody: typeof setGiteeNewPullRequestBody
+    giteeNewPullRequestBase: typeof giteeNewPullRequestBase
+    setGiteeNewPullRequestBase: typeof setGiteeNewPullRequestBase
+    giteeNewPullRequestHead: typeof giteeNewPullRequestHead
+    setGiteeNewPullRequestHead: typeof setGiteeNewPullRequestHead
+    giteeNewPullRequestSubmitting: typeof giteeNewPullRequestSubmitting
+    setGiteeNewPullRequestSubmitting: typeof setGiteeNewPullRequestSubmitting
   }
   nextModel.taskSourceManuallyChangedRef = taskSourceManuallyChangedRef
   nextModel.lastPageTaskSourceRef = lastPageTaskSourceRef
@@ -169,6 +242,49 @@ export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel)
   nextModel.gitlabFilterIsValid = gitlabFilterIsValid
   nextModel.activeGitlabFilter = activeGitlabFilter
   nextModel.displayedGitLabItems = displayedGitLabItems
+  nextModel.giteeItems = giteeItems
+  nextModel.setGiteeItems = setGiteeItems
+  nextModel.giteeLoading = giteeLoading
+  nextModel.setGiteeLoading = setGiteeLoading
+  nextModel.giteeError = giteeError
+  nextModel.setGiteeError = setGiteeError
+  nextModel.selectedGiteeItem = selectedGiteeItem
+  nextModel.setSelectedGiteeItem = setSelectedGiteeItem
+  nextModel.giteeMode = giteeMode
+  nextModel.setGiteeMode = setGiteeMode
+  nextModel.giteePullRequests = giteePullRequests
+  nextModel.setGiteePullRequests = setGiteePullRequests
+  nextModel.giteeRefreshNonce = giteeRefreshNonce
+  nextModel.setGiteeRefreshNonce = setGiteeRefreshNonce
+  nextModel.giteeProjects = giteeProjects
+  nextModel.setGiteeProjects = setGiteeProjects
+  nextModel.giteeFilter = giteeFilter
+  nextModel.setGiteeFilter = setGiteeFilter
+  nextModel.giteeSearch = giteeSearch
+  nextModel.setGiteeSearch = setGiteeSearch
+  nextModel.giteeNewIssueOpen = giteeNewIssueOpen
+  nextModel.setGiteeNewIssueOpen = setGiteeNewIssueOpen
+  nextModel.giteeNewIssueTitle = giteeNewIssueTitle
+  nextModel.setGiteeNewIssueTitle = setGiteeNewIssueTitle
+  nextModel.giteeNewIssueBody = giteeNewIssueBody
+  nextModel.setGiteeNewIssueBody = setGiteeNewIssueBody
+  nextModel.giteeNewIssueSubmitting = giteeNewIssueSubmitting
+  nextModel.setGiteeNewIssueSubmitting = setGiteeNewIssueSubmitting
+  nextModel.giteeNewIssueRepoId = giteeNewIssueRepoId
+  nextModel.setGiteeNewIssueRepoId = setGiteeNewIssueRepoId
+  nextModel.giteeNewIssueTargetRepo = giteeNewIssueTargetRepo
+  nextModel.giteeNewPullRequestOpen = giteeNewPullRequestOpen
+  nextModel.setGiteeNewPullRequestOpen = setGiteeNewPullRequestOpen
+  nextModel.giteeNewPullRequestTitle = giteeNewPullRequestTitle
+  nextModel.setGiteeNewPullRequestTitle = setGiteeNewPullRequestTitle
+  nextModel.giteeNewPullRequestBody = giteeNewPullRequestBody
+  nextModel.setGiteeNewPullRequestBody = setGiteeNewPullRequestBody
+  nextModel.giteeNewPullRequestBase = giteeNewPullRequestBase
+  nextModel.setGiteeNewPullRequestBase = setGiteeNewPullRequestBase
+  nextModel.giteeNewPullRequestHead = giteeNewPullRequestHead
+  nextModel.setGiteeNewPullRequestHead = setGiteeNewPullRequestHead
+  nextModel.giteeNewPullRequestSubmitting = giteeNewPullRequestSubmitting
+  nextModel.setGiteeNewPullRequestSubmitting = setGiteeNewPullRequestSubmitting
   return nextModel
 }
 export type TaskPageProviderStateModel = ReturnType<typeof useTaskPageProviderState>

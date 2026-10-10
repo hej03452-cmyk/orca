@@ -7,5 +7,6 @@ export type { CliProviderCardState } from './source-control-preflight-card-statu
 export { BitbucketIntegrationCard } from './bitbucket-integration-card'
 export {
   AzureDevOpsIntegrationCard,
-  GiteaIntegrationCard
+  GiteaIntegrationCard,
+  GiteeIntegrationCard
 } from './token-source-control-integration-cards'

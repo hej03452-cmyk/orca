@@ -17,6 +17,13 @@ export type PreflightStatus = {
     baseUrl: string | null
     tokenConfigured: boolean
   }
+  gitee?: {
+    configured: boolean
+    authenticated: boolean
+    account: string | null
+    baseUrl: string
+    tokenConfigured: boolean
+  }
   gitea?: {
     configured: boolean
     authenticated: boolean

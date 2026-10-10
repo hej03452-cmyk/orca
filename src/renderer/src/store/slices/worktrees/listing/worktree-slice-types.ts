@@ -80,6 +80,7 @@ export type HostedReviewLinkKey =
   | 'linkedBitbucketPR'
   | 'linkedAzureDevOpsPR'
   | 'linkedGiteaPR'
+  | 'linkedGiteePR'
 
 export type RuntimeWorktreeMetaUpdates = Omit<Partial<WorktreeMeta>, 'pushTarget'> & {
   pushTarget?: GitPushTarget | null

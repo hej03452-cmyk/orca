@@ -48,6 +48,7 @@ import type {
 import type { PetApi } from './api/pet-api'
 import type { PluginsApi } from './api/plugin-host-api'
 import type { PreflightApi } from './api/preflight-api'
+import type { GiteeApi } from './api/gitee-api'
 import type { PtyApi } from './api/pty-api'
 import type { ProjectGroupsApi, ProjectsApi, RepositoryApi } from './api/repository-api'
 import type { RuntimeApi } from './api/runtime-api'
@@ -88,6 +89,7 @@ export type PreloadApi = {
   gh: Merged<GithubPullRequestApi & GithubWorkItemApi & GithubAccountApi>
   hostedReview: HostedReviewApi
   gl: GitLabApi
+  gitee: GiteeApi
   bitbucket: BitbucketApi
   linear: LinearApi
   jira: JiraApi

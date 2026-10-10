@@ -79,6 +79,12 @@ export function useTaskSourceProviderReadiness(
         unavailable: reviewUnavailable,
         visible: visible.has('gitlab')
       },
+      gitee: {
+        connected: reviewReadyForConnection && preflightStatus?.gitee?.authenticated === true,
+        checking: reviewChecking,
+        unavailable: reviewUnavailable,
+        visible: visible.has('gitee')
+      },
       linear: {
         connected: linearConnected,
         checking: linearChecking,
@@ -96,6 +102,7 @@ export function useTaskSourceProviderReadiness(
   }, [
     githubConnected,
     gitlabConnected,
+    reviewReadyForConnection,
     jiraChecking,
     jiraConnected,
     linearChecking,
@@ -106,6 +113,7 @@ export function useTaskSourceProviderReadiness(
     linearSkillUnverifiable,
     reviewChecking,
     reviewUnavailable,
+    preflightStatus?.gitee?.authenticated,
     visibleProvidersKey
   ])
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Github, Gitlab } from 'lucide-react'
+import { Github, Gitlab, CircleDot } from 'lucide-react'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
 import type { TaskProvider } from '../../../../shared/task-providers'
 import {
@@ -65,6 +65,18 @@ const PROVIDER_META: Record<
       )
     },
     Icon: ({ className }) => <Gitlab className={className} />
+  },
+  gitee: {
+    get label() {
+      return translate('auto.components.settings.TasksPane.gitee', 'Gitee')
+    },
+    get description() {
+      return translate(
+        'auto.components.settings.TasksPane.giteeDescription',
+        'Browse Gitee issues and start workspaces from them.'
+      )
+    },
+    Icon: ({ className }) => <CircleDot className={className} />
   },
   linear: {
     get label() {

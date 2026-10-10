@@ -13,6 +13,7 @@ import { hydrateShellPath, mergePathSegments } from '../startup/hydrate-shell-pa
 import { getAzureDevOpsAuthStatus } from '../azure-devops/client'
 import { getBitbucketAuthStatus } from '../bitbucket/client'
 import { getGiteaAuthStatus } from '../gitea/client'
+import { getGiteeAuthStatus } from '../gitee/client'
 import { _resetKnownHostsCache } from '../gitlab/gl-utils'
 import { mergePersistedWindowsPathAsync } from '../pty/windows-environment-path'
 import { getActiveMultiplexer } from '../ssh/ssh-target-registry'
@@ -68,6 +69,13 @@ export type PreflightStatus = {
     authenticated: boolean
     account: string | null
     baseUrl: string | null
+    tokenConfigured: boolean
+  }
+  gitee?: {
+    configured: boolean
+    authenticated: boolean
+    account: string | null
+    baseUrl: string
     tokenConfigured: boolean
   }
 }
@@ -379,13 +387,15 @@ async function executePreflightCheck(
     detectCommandRuntime('glab', context)
   ])
 
-  const [ghAuthenticated, glabAuthenticated, bitbucket, azureDevOps, gitea] = await Promise.all([
-    ghProbe.installed ? isGhAuthenticated(ghProbe.wslTarget) : Promise.resolve(false),
-    glabProbe.installed ? isGlabAuthenticated(glabProbe.wslTarget) : Promise.resolve(false),
-    getBitbucketAuthStatus(),
-    getAzureDevOpsAuthStatus(),
-    getGiteaAuthStatus()
-  ])
+  const [ghAuthenticated, glabAuthenticated, bitbucket, azureDevOps, gitea, gitee] =
+    await Promise.all([
+      ghProbe.installed ? isGhAuthenticated(ghProbe.wslTarget) : Promise.resolve(false),
+      glabProbe.installed ? isGlabAuthenticated(glabProbe.wslTarget) : Promise.resolve(false),
+      getBitbucketAuthStatus(),
+      getAzureDevOpsAuthStatus(),
+      getGiteaAuthStatus(),
+      getGiteeAuthStatus()
+    ])
 
   const result = {
     git: { installed: gitProbe.installed },
@@ -393,7 +403,8 @@ async function executePreflightCheck(
     glab: { installed: glabProbe.installed, authenticated: glabAuthenticated },
     bitbucket,
     azureDevOps,
-    gitea
+    gitea,
+    gitee
   }
 
   return result

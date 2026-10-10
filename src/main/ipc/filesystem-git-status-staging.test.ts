@@ -342,6 +342,19 @@ describe('registerFilesystemHandlers', () => {
     await expect(secondRequest).rejects.toThrow('aborted')
   })
 
+  it('resolves expected AbortError cancellations without rejecting the IPC handler', async () => {
+    registerWorktreeRootsForRepo(store as never, 'repo-1', [REPO_PATH, WORKTREE_FEATURE_PATH])
+    getStatusMock.mockRejectedValue(new DOMException('The operation was aborted.', 'AbortError'))
+    registerFilesystemHandlers(store as never)
+
+    await expect(
+      handlers.get('git:status')!({ sender: { id: 7 } }, {
+        worktreePath: WORKTREE_FEATURE_PATH,
+        requestToken: 'status-abort'
+      })
+    ).resolves.toEqual({ entries: [], conflictOperation: 'unknown' })
+  })
+
   it('checks ignored paths through local and SSH git providers', async () => {
     registerWorktreeRootsForRepo(store as never, 'repo-1', [REPO_PATH, WORKTREE_FEATURE_PATH])
     checkIgnoredPathsMock.mockResolvedValue(['dist/bundle.js'])

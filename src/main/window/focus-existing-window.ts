@@ -37,15 +37,23 @@ function safelyFocusApp(app: Pick<App, 'focus'>): void {
   }
 }
 
-export function safelyRevealWindow(window: BrowserWindow): void {
-  if (window.isDestroyed() || isWindowlessLaunch()) {
+export function safelyRevealWindow(
+  window: BrowserWindow,
+  options: { userInitiated?: boolean } = {}
+): void {
+  const userInitiated = options.userInitiated === true
+  if (window.isDestroyed() || (isWindowlessLaunch() && !userInitiated)) {
     return
   }
   if (window.isMinimized()) {
     window.restore()
   }
-  showWindowWithoutStealingFocus(window)
-  if (!isBackgroundLaunch()) {
+  if (userInitiated) {
+    window.show()
+  } else {
+    showWindowWithoutStealingFocus(window)
+  }
+  if (userInitiated || !isBackgroundLaunch()) {
     window.focus()
   }
 }

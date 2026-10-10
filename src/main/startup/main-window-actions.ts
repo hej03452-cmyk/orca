@@ -43,11 +43,14 @@ export function focusExistingWindow(): void {
 
 export function showMainWindowFromTray(): void {
   if (state.mainWindow && !state.mainWindow.isDestroyed()) {
-    safelyRevealWindow(state.mainWindow)
+    safelyRevealWindow(state.mainWindow, { userInitiated: true })
     return
   }
   if (!isQuittingForUpdate()) {
-    openWindow()
+    const window = openWindow()
+    // A tray click is an explicit user action, even when the process was
+    // launched headlessly for automation; reveal the newly created window.
+    safelyRevealWindow(window, { userInitiated: true })
   }
 }
 

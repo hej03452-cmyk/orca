@@ -2,6 +2,7 @@ import type { TaskPageSearchActionsModel } from './use-task-page-search-actions'
 import { useCallback } from 'react'
 import type { GitHubWorkItem } from '../../../shared/github/work-item-types'
 import type { GitLabWorkItem } from '../../../shared/gitlab-types'
+import type { GiteeTaskItem } from '../../../shared/gitee-issue-types'
 import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
 import { useAppStore } from '@/store'
 import { findGithubWorkItemWorkspaceAttachment } from '@/lib/github-work-item-workspace-attachment'
@@ -14,7 +15,7 @@ import {
   getTaskPageRepoSourceContext
 } from './task-page-source-context'
 export function useTaskPageWorkspaceActions(model: TaskPageSearchActionsModel) {
-  const { repoMap, openModal } = model
+  const { repoMap, openModal, setSelectedGiteeItem } = model
   const openComposerForItem = useCallback(
     (item: GitHubWorkItem): void => {
       const linkedWorkItem: LinkedWorkItemSummary = {
@@ -114,18 +115,50 @@ export function useTaskPageWorkspaceActions(model: TaskPageSearchActionsModel) {
     },
     [openComposerForGitLabItem]
   )
+  const handleUseGiteeItem = useCallback(
+    (item: GiteeTaskItem): void => {
+      const linkedWorkItem: LinkedWorkItemSummary = {
+        provider: 'gitee',
+        type: item.kind ?? 'issue',
+        // Gitee uses string issue identifiers (for example IKIZKK), while workspace links reserve number 0 for non-numeric providers.
+        number: 0,
+        title: item.title,
+        url: item.url,
+        repoId: item.repoId
+      }
+      openModal('new-workspace-composer', {
+        linkedWorkItem,
+        taskSourceContext: getTaskPageRepoSourceContext(repoMap.get(item.repoId), 'gitee'),
+        prefilledName: `gitee-${item.number}`,
+        initialRepoId: item.repoId,
+        telemetrySource: 'sidebar'
+      })
+    },
+    [openModal, repoMap]
+  )
+  const openGiteeDetail = useCallback(
+    (item: GiteeTaskItem): void => {
+      setSelectedGiteeItem(item)
+    },
+    [setSelectedGiteeItem]
+  )
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: this staged hook adds the handlers declared below to the prior model.
   const nextModel = model as typeof model & {
     openComposerForItem: typeof openComposerForItem
     handleUseWorkItem: typeof handleUseWorkItem
     handleOpenOrUseGitHubWorkItem: typeof handleOpenOrUseGitHubWorkItem
     openComposerForGitLabItem: typeof openComposerForGitLabItem
     handleUseGitLabItem: typeof handleUseGitLabItem
+    handleUseGiteeItem: typeof handleUseGiteeItem
+    openGiteeDetail: typeof openGiteeDetail
   }
   nextModel.openComposerForItem = openComposerForItem
   nextModel.handleUseWorkItem = handleUseWorkItem
   nextModel.handleOpenOrUseGitHubWorkItem = handleOpenOrUseGitHubWorkItem
   nextModel.openComposerForGitLabItem = openComposerForGitLabItem
   nextModel.handleUseGitLabItem = handleUseGitLabItem
+  nextModel.handleUseGiteeItem = handleUseGiteeItem
+  nextModel.openGiteeDetail = openGiteeDetail
   return nextModel
 }
 export type TaskPageWorkspaceActionsModel = ReturnType<typeof useTaskPageWorkspaceActions>

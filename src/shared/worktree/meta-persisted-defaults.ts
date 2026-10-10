@@ -23,6 +23,7 @@ export const WORKTREE_META_PERSISTED_DEFAULTS = {
   linkedBitbucketPR: null,
   linkedAzureDevOpsPR: null,
   linkedGiteaPR: null,
+  linkedGiteePR: null,
   linkedWorkItem: null,
   linkedTaskSourceContext: null,
   isArchived: false,

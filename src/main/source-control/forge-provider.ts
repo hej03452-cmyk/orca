@@ -24,6 +24,12 @@ import {
 } from '../gitea/client'
 import { createGiteaPullRequest } from '../gitea/pull-request-creation'
 import {
+  getGiteePullRequest,
+  getGiteePullRequestForBranchOrThrow,
+  getGiteeRepoSlug
+} from '../gitee/client'
+import { createGiteePullRequest } from '../gitee/pull-request-creation'
+import {
   createGitHubPullRequest,
   getGitHubPRLookupRateLimitBlock,
   getPRForBranchOutcome,
@@ -35,6 +41,7 @@ import {
   mapAzureDevOpsReview,
   mapBitbucketReview,
   mapGiteaReview,
+  mapGiteeReview,
   mapGitHubReview,
   mapGitLabReview
 } from './forge-review-mappers'
@@ -312,6 +319,37 @@ const giteaForgeProvider = {
   createReview: createGiteaPullRequest
 } satisfies ForgeProvider
 
+const giteeForgeProvider = {
+  id: 'gitee',
+  supportsReviewCreation: true,
+  resolveRepository: (context) =>
+    getGiteeRepoSlug(
+      context.repoPath,
+      forgeConnectionId(context),
+      ...hostedReviewExecutionArgs(context)
+    ),
+  async getReviewForBranch(input) {
+    const pr = await getGiteePullRequestForBranchOrThrow(
+      input.repoPath,
+      input.branch,
+      input.linkedReviewNumber ?? null,
+      forgeConnectionId(input),
+      ...hostedReviewExecutionArgs(input)
+    )
+    return pr ? mapGiteeReview(pr) : null
+  },
+  async getReviewByNumber(input) {
+    const pr = await getGiteePullRequest(
+      input.repoPath,
+      input.number,
+      forgeConnectionId(input),
+      ...hostedReviewExecutionArgs(input)
+    )
+    return pr ? mapGiteeReview(pr) : null
+  },
+  createReview: createGiteePullRequest
+} satisfies ForgeProvider
+
 // Why: provider order preserves existing branch-status behavior when remotes
 // could be interpreted by more than one hosting integration.
 export const FORGE_PROVIDERS = [
@@ -319,7 +357,8 @@ export const FORGE_PROVIDERS = [
   gitHubForgeProvider,
   bitbucketForgeProvider,
   azureDevOpsForgeProvider,
-  giteaForgeProvider
+  giteaForgeProvider,
+  giteeForgeProvider
 ] as const satisfies readonly ForgeProvider[]
 
 export function getForgeProviderById(id: ForgeProviderId): ForgeProvider {

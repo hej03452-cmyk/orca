@@ -112,6 +112,7 @@ export class RuntimeHostedReviewCommands {
     linkedBitbucketPR?: number | null
     linkedAzureDevOpsPR?: number | null
     linkedGiteaPR?: number | null
+    linkedGiteePR?: number | null
   }): Promise<HostedReviewInfo | null> {
     const repo = await this.deps.resolveRepo(args.repoSelector)
     const executionOptions = this.deps.getExecutionOptions(repo, args.admissionTier ?? 'background')
@@ -127,6 +128,7 @@ export class RuntimeHostedReviewCommands {
       linkedBitbucketPR: args.linkedBitbucketPR ?? null,
       linkedAzureDevOpsPR: args.linkedAzureDevOpsPR ?? null,
       linkedGiteaPR: args.linkedGiteaPR ?? null,
+      linkedGiteePR: args.linkedGiteePR ?? null,
       ...executionOptions
     })
     if (review?.provider === 'github') {
@@ -155,6 +157,7 @@ export class RuntimeHostedReviewCommands {
       linkedBitbucketPR: args.linkedBitbucketPR ?? null,
       linkedAzureDevOpsPR: args.linkedAzureDevOpsPR ?? null,
       linkedGiteaPR: args.linkedGiteaPR ?? null,
+      linkedGiteePR: args.linkedGiteePR ?? null,
       ...executionOptions
     })
   }

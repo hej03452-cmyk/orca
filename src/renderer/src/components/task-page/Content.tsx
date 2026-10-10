@@ -5,6 +5,9 @@ import ProjectViewWrapper from '@/components/github-project/ProjectViewWrapper'
 import { TaskPageGitHubList } from './github/List'
 import { TaskPageGitLabTodoList } from './gitlab/TodoList'
 import { TaskPageGitLabItemList } from './gitlab/ItemList'
+import { TaskPageGiteeDetail } from './gitee/Detail'
+import { TaskPageGiteeProjectList } from './gitee/ProjectList'
+import { TaskPageGiteeList } from './gitee/List'
 import { TaskPageJiraContent } from './jira/Content'
 export function TaskPageContent({
   model
@@ -23,7 +26,8 @@ export function TaskPageContent({
     setDialogWorkItem,
     handleDialogReviewRequestsChange,
     closeTaskDetailPage,
-    handleUseWorkItem
+    handleUseWorkItem,
+    selectedGiteeItem
   } = model
   return taskSource === 'github' && dialogWorkItem ? (
     dialogWorkItem.type === 'pr' ? (
@@ -69,6 +73,14 @@ export function TaskPageContent({
     <TaskPageGitLabTodoList model={model} />
   ) : taskSource === 'gitlab' ? (
     <TaskPageGitLabItemList model={model} />
+  ) : taskSource === 'gitee' && selectedGiteeItem ? (
+    <TaskPageGiteeDetail model={model} />
+  ) : taskSource === 'gitee' && (model.giteeMode === 'prs' || model.giteeMode === 'issues') ? (
+    <TaskPageGiteeList model={model} />
+  ) : taskSource === 'gitee' && model.giteeMode === 'projects' ? (
+    <TaskPageGiteeProjectList model={model} />
+  ) : taskSource === 'gitee' ? (
+    <TaskPageGiteeList model={model} />
   ) : (
     <TaskPageJiraContent model={model} />
   )

@@ -6,6 +6,7 @@ export type HostedReviewCreationProvider =
   | 'bitbucket'
   | 'azure-devops'
   | 'gitea'
+  | 'gitee'
 
 // Takes a plain string: the provider a client holds may be a token the host named and this build
 // does not list, and answering "may I create with this?" for an unknown token is the whole job.
@@ -17,7 +18,8 @@ export function supportsHostedReviewCreation(
     provider === 'gitlab' ||
     provider === 'bitbucket' ||
     provider === 'azure-devops' ||
-    provider === 'gitea'
+    provider === 'gitea' ||
+    provider === 'gitee'
   )
 }
 

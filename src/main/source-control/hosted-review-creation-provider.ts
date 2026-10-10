@@ -4,6 +4,7 @@ import type { HostedReviewCreationProvider } from '../../shared/hosted-review-cr
 import { isAzureDevOpsReviewCreationAuthenticated } from '../azure-devops/pull-request-creation'
 import { isBitbucketReviewCreationAuthenticated } from '../bitbucket/pull-request-creation'
 import { isGiteaReviewCreationAuthenticated } from '../gitea/pull-request-creation'
+import { isGiteeReviewCreationAuthenticated } from '../gitee/pull-request-creation'
 import { getEnterpriseGitHubRepoSlug } from '../github/github-enterprise-repository'
 import { acquire, ghExecFileAsync, release } from '../github/gh-utils'
 import { getProjectSlug } from '../gitlab/client'
@@ -99,6 +100,14 @@ export function reviewCopy(provider: HostedReviewProvider): {
       authInstruction: 'Set ORCA_GITEA_TOKEN'
     }
   }
+  if (provider === 'gitee') {
+    return {
+      shortLabel: 'PR',
+      reviewLabel: 'pull request',
+      providerName: 'Gitee',
+      authInstruction: '请先在设置中完成 Gitee 登录并授予仓库写入权限。'
+    }
+  }
   if (provider === 'bitbucket') {
     return {
       shortLabel: 'PR',
@@ -126,6 +135,9 @@ export async function isProviderAuthenticated(
   }
   if (provider === 'gitea') {
     return isGiteaReviewCreationAuthenticated()
+  }
+  if (provider === 'gitee') {
+    return isGiteeReviewCreationAuthenticated()
   }
   if (provider === 'bitbucket') {
     // Why: falling through to the GitHub check made Create PR unusable for
