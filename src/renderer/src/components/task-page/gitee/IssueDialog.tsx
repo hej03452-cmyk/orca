@@ -15,6 +15,7 @@ import { isScreenSubmitShortcut } from '@/lib/screen-submit-shortcut'
 import { GitHubMarkdownComposer } from '@/components/github/GitHubMarkdownComposer'
 import RepoBadgeLabel from '@/components/repo/RepoBadgeLabel'
 
+/** 提供创建 Gitee Issue 的标题、正文和目标仓库表单。 */
 export function TaskPageGiteeIssueDialog({
   model
 }: {

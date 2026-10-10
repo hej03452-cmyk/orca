@@ -9,6 +9,7 @@ export type GiteeIssueListResult = {
   error?: { type: 'auth' | 'not_found' | 'unknown'; message: string }
 }
 
+/** 渲染器可使用的 Gitee API 类型；令牌字段不会从主进程返回。 */
 export type GiteeApi = {
   connect: (args: { token: string; baseUrl?: string | null }) => Promise<GiteeConnectResult>
   disconnect: () => Promise<void>

@@ -19,6 +19,8 @@ import { getConfiguredGiteeToken, getStoredGiteeMetadata } from './credential-st
 
 const REQUEST_TIMEOUT_MS = 5000
 type GiteeAuthConfig = { apiBaseUrl: string; token: string | null }
+
+/** Gitee 预检结果，同时区分“已配置”和“令牌验证成功”。 */
 export type GiteeAuthStatus = {
   configured: boolean
   authenticated: boolean
@@ -27,10 +29,12 @@ export type GiteeAuthStatus = {
   tokenConfigured: boolean
 }
 
+/** 读取可选环境配置；访问令牌只允许来自 Orca 凭据存储。 */
 function envValue(name: string): string | null {
   const value = process.env[name]?.trim() ?? ''
   return value || null
 }
+/** 组合当前 API 地址和 Orca 已保存的访问令牌。 */
 function getAuthConfig(): GiteeAuthConfig {
   return {
     apiBaseUrl: (
@@ -41,6 +45,7 @@ function getAuthConfig(): GiteeAuthConfig {
     token: getConfiguredGiteeToken()
   }
 }
+/** 创建带认证参数的 Gitee API URL。 */
 function apiUrl(path: string, params?: Record<string, string | number>): URL {
   const url = new URL(`${getAuthConfig().apiBaseUrl}${path}`)
   const token = getAuthConfig().token
@@ -52,6 +57,7 @@ function apiUrl(path: string, params?: Record<string, string | number>): URL {
   }
   return url
 }
+/** 请求 JSON 接口；普通列表请求失败时返回 null，强制模式则抛出错误。 */
 async function requestJson<T>(
   path: string,
   params?: Record<string, string | number>,
@@ -78,6 +84,7 @@ async function requestJson<T>(
     return null
   }
 }
+/** 读取某个提交的检查状态并转换为 Orca 通用状态。 */
 async function getCommitStatus(
   repo: GiteeRepoRef,
   sha: string | undefined
@@ -91,13 +98,16 @@ async function getCommitStatus(
   )
   return deriveGiteeCommitStatus(statuses)
 }
+/** 对仓库拥有者和名称分别编码，保留 Gitee API 的路径分隔符。 */
 function encodedRepoPath(repo: GiteeRepoRef): string {
   return `${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.repo)}`
 }
+/** 判断拉取请求的源分支是否匹配当前工作区分支。 */
 function matchesBranch(raw: RawGiteePullRequest, branch: string): boolean {
   return raw.head?.ref?.trim() === branch
 }
 
+/** 通过 Gitee /user 接口检查已保存令牌是否仍然有效。 */
 export async function getGiteeAuthStatus(): Promise<GiteeAuthStatus> {
   const config = getAuthConfig()
   if (!config.token) {
@@ -136,6 +146,7 @@ export async function getGiteeAuthStatus(): Promise<GiteeAuthStatus> {
   }
 }
 
+/** 获取单条 Gitee 拉取请求及其提交检查状态。 */
 export async function getGiteePullRequest(
   repoPath: string,
   number: number,
@@ -156,6 +167,7 @@ export async function getGiteePullRequest(
   return raw ? mapGiteePullRequest(raw, await getCommitStatus(repo, raw.head?.sha?.trim())) : null
 }
 
+/** 分页读取仓库的 Gitee 拉取请求。 */
 export async function listGiteePullRequests(
   repoPath: string,
   limit = 50,
@@ -180,6 +192,7 @@ export async function listGiteePullRequests(
     .filter((item): item is GiteePullRequestInfo => item !== null)
 }
 
+/** 合并或关闭 Gitee 拉取请求。 */
 export async function updateGiteePullRequest(
   repoPath: string,
   number: number,
@@ -216,6 +229,7 @@ export async function updateGiteePullRequest(
   }
 }
 
+/** 读取 Gitee 项目；不支持项目接口时回退到里程碑。 */
 export async function listGiteeProjects(
   repoPath: string,
   limit = 50,
@@ -280,6 +294,7 @@ export async function listGiteeProjects(
   })
 }
 
+/** 根据源分支寻找现有拉取请求，用于避免重复创建。 */
 export async function getGiteePullRequestForBranch(
   repoPath: string,
   branch: string,
@@ -315,6 +330,7 @@ export async function getGiteePullRequestForBranch(
     : getGiteePullRequest(repoPath, linkedNumber, connectionId, options)
 }
 
+/** 带异常抛出的分支拉取请求查询，供工作区创建流程使用。 */
 export function getGiteePullRequestForBranchOrThrow(
   repoPath: string,
   branch: string,
@@ -325,6 +341,7 @@ export function getGiteePullRequestForBranchOrThrow(
   return getGiteePullRequestForBranch(repoPath, branch, linkedNumber, connectionId, options, true)
 }
 
+/** 解析当前仓库的 Gitee 所有者和仓库名。 */
 export function getGiteeRepoSlug(
   repoPath: string,
   connectionId?: string | null,

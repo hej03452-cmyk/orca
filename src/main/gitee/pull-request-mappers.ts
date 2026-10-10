@@ -1,5 +1,6 @@
 import type { CheckStatus, PRMergeableState } from '../../shared/github/pull-request-types'
 
+/** Gitee 拉取请求接口的原始响应结构。 */
 export type RawGiteePullRequest = {
   number?: number
   title?: string
@@ -15,6 +16,7 @@ export type RawGiteePullRequest = {
   base?: { ref?: string | null } | null
 }
 
+/** 任务页展示所需的 Gitee 拉取请求模型。 */
 export type GiteePullRequestInfo = {
   number: number
   title: string
@@ -30,11 +32,13 @@ export type GiteePullRequestInfo = {
   baseRef?: string
 }
 
+/** Gitee 提交检查状态的原始结构。 */
 export type RawGiteeCommitStatus = {
   state?: string | null
   status?: string | null
 }
 
+/** 将 Gitee 检查项汇总为 Orca 通用的检查状态。 */
 export function deriveGiteeCommitStatus(statuses: RawGiteeCommitStatus[] | null): CheckStatus {
   if (!statuses || statuses.length === 0) {
     return 'neutral'
@@ -63,6 +67,7 @@ export function deriveGiteeCommitStatus(statuses: RawGiteeCommitStatus[] | null)
     : 'neutral'
 }
 
+/** 按 Gitee 的字段优先级计算拉取请求状态。 */
 export function mapGiteePullRequestState(raw: RawGiteePullRequest): GiteePullRequestInfo['state'] {
   if (raw.merged_at) {
     return 'merged'
@@ -76,6 +81,7 @@ export function mapGiteePullRequestState(raw: RawGiteePullRequest): GiteePullReq
   return 'open'
 }
 
+/** 将单条 Gitee 拉取请求映射为任务页模型，缺少关键字段时返回 null。 */
 export function mapGiteePullRequest(
   raw: RawGiteePullRequest,
   status: CheckStatus = 'neutral'

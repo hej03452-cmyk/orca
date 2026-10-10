@@ -14,6 +14,8 @@ import {
   getGitLabWorkItemWorkspaceSeed,
   getTaskPageRepoSourceContext
 } from './task-page-source-context'
+
+/** 将任务列表中的 Issue/PR 转换为工作区创建器所需的关联任务。 */
 export function useTaskPageWorkspaceActions(model: TaskPageSearchActionsModel) {
   const { repoMap, openModal, setSelectedGiteeItem } = model
   const openComposerForItem = useCallback(
@@ -117,6 +119,7 @@ export function useTaskPageWorkspaceActions(model: TaskPageSearchActionsModel) {
   )
   const handleUseGiteeItem = useCallback(
     (item: GiteeTaskItem): void => {
+      // Gitee 的编号可能是字符串，工作区链接模型用 0 表示非数字平台编号。
       const linkedWorkItem: LinkedWorkItemSummary = {
         provider: 'gitee',
         type: item.kind ?? 'issue',

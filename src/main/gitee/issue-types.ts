@@ -1,6 +1,7 @@
 import type { GiteeIssueInfo, GiteeIssueComment } from '../../shared/gitee-issue-types'
 export type { GiteeIssueInfo } from '../../shared/gitee-issue-types'
 
+/** Gitee Issue 接口可能返回的原始字段。 */
 export type RawGiteeIssue = {
   number?: number | string
   title?: string
@@ -17,6 +18,7 @@ export type RawGiteeIssue = {
   comment_count?: number | string | null
 }
 
+/** Gitee 评论接口返回的原始字段。 */
 export type RawGiteeIssueComment = {
   id?: number | string
   body?: string | null
@@ -25,6 +27,7 @@ export type RawGiteeIssueComment = {
   user?: { login?: string | null; name?: string | null } | null
 }
 
+/** 将 Gitee 的 Issue 响应转换为任务页使用的统一模型。 */
 export function mapGiteeIssue(raw: RawGiteeIssue): GiteeIssueInfo | null {
   const number = raw.number == null ? '' : String(raw.number).trim()
   if (!number || !raw.title || !raw.html_url) {

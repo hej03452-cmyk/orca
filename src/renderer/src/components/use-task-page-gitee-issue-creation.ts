@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 import { toast } from 'sonner'
 import type { GiteeTaskItem } from '../../../shared/gitee-issue-types'
 
+/** 为任务页注入“创建 Gitee 议题”的状态和操作。 */
 export function useTaskPageGiteeIssueCreation(model: TaskPageGiteeLoadingModel) {
   const {
     giteeNewIssueTargetRepo,
@@ -17,6 +18,7 @@ export function useTaskPageGiteeIssueCreation(model: TaskPageGiteeLoadingModel) 
     setSelectedGiteeItem
   } = model
   const handleCreateGiteeIssue = useCallback(async (): Promise<void> => {
+    // 防止未选仓库、空标题或重复点击触发无效请求。
     if (!giteeNewIssueTargetRepo || !giteeNewIssueTitle.trim() || giteeNewIssueSubmitting) {
       return
     }

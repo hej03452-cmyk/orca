@@ -3,6 +3,7 @@ import { ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
 
+/** 展示 Gitee 拉取请求的简化列表视图。 */
 export function TaskPageGiteePullRequestList({ model }: { model: TaskPageComposerActionsModel }): React.JSX.Element {
   const { giteePullRequests } = model
   return <div className="flex min-h-0 max-h-full flex-col overflow-hidden rounded-md rounded-t-none border border-t-0 border-border/50 bg-background shadow-sm">

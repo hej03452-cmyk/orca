@@ -1,5 +1,6 @@
 import { createRemoteRefProbeCache } from '../git/remote-ref-probe-cache'
 
+/** 已解析的 Gitee 仓库信息，后续 API 请求都使用这个统一结构。 */
 export type GiteeRepoRef = {
   host: 'gitee.com'
   owner: string
@@ -10,6 +11,7 @@ export type GiteeRepoRef = {
 
 type LocalGitExecOptions = { wslDistro?: string; remoteUrl?: string }
 
+/** 从远程 URL 的路径部分提取“拥有者/仓库名”。 */
 function parsePath(pathname: string): { owner: string; repo: string } | null {
   const parts = pathname
     .replace(/\/+$/, '')
@@ -24,6 +26,7 @@ function parsePath(pathname: string): { owner: string; repo: string } | null {
   return owner && repo ? { owner, repo } : null
 }
 
+/** 解析 HTTPS、SSH 和 SCP 格式的 Gitee 远程地址。 */
 export function parseGiteeRepoRef(remoteUrl: string): GiteeRepoRef | null {
   const trimmed = remoteUrl.trim()
   let host: string | undefined
@@ -59,12 +62,14 @@ export function parseGiteeRepoRef(remoteUrl: string): GiteeRepoRef | null {
   }
 }
 
+/** 在已有远程地址存在时直接解析，避免再次执行 Git 命令。 */
 export function getGiteeRepoRefFromRemoteUrl(remoteUrl: string | null | undefined): GiteeRepoRef | null {
   return remoteUrl?.trim() ? parseGiteeRepoRef(remoteUrl) : null
 }
 
 const repoRefProbeCache = createRemoteRefProbeCache(parseGiteeRepoRef)
 
+/** 从本地仓库远程配置中查询并缓存 Gitee 仓库信息。 */
 export async function getGiteeRepoRefForRemote(
   repoPath: string,
   remoteName: string,
@@ -74,10 +79,12 @@ export async function getGiteeRepoRefForRemote(
   return repoRefProbeCache.get(repoPath, remoteName, connectionId, localGitOptions)
 }
 
+/** 测试或凭据变化后清空远程仓库解析缓存。 */
 export function _resetGiteeRepoRefCache(): void {
   repoRefProbeCache.clear()
 }
 
+/** 优先使用调用方提供的远程地址，否则读取仓库的 origin。 */
 export function getGiteeRepoRef(
   repoPath: string,
   connectionId?: string | null,

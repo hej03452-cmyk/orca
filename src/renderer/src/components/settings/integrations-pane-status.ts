@@ -49,6 +49,7 @@ type GiteaPreflightStatus = {
 }
 type GiteePreflightStatus = GiteaPreflightStatus
 
+/** 将令牌型服务的预检结果转换为设置页状态。 */
 export function tokenApiStatusFromPreflight(
   status: TokenApiPreflightStatus | undefined
 ): AzureDevOpsStatus {
@@ -64,6 +65,7 @@ export function tokenApiStatusFromPreflight(
   return 'configured'
 }
 
+/** 将 Gitea 预检结果转换为设置卡片状态。 */
 export function giteaStatusFromPreflight(status: GiteaPreflightStatus | undefined): GiteaStatus {
   if (!status?.configured) {
     return 'not-configured'
@@ -73,6 +75,7 @@ export function giteaStatusFromPreflight(status: GiteaPreflightStatus | undefine
   }
   return 'configured'
 }
+/** 将 Gitee 预检结果转换为设置卡片状态。 */
 export function giteeStatusFromPreflight(status: GiteePreflightStatus | undefined): GiteeStatus {
   if (!status?.configured) {
     return 'not-configured'
@@ -112,6 +115,7 @@ function maybeChecking<T extends string>(
   return refreshingProviders.has(provider) ? 'checking' : status
 }
 
+/** 将主进程预检快照整理为设置页各集成卡片需要的字段。 */
 export function getPreflightIntegrationStatuses(
   preflightStatus: PreflightStatus | null,
   refreshingProviders: ReadonlySet<PreflightRefreshProvider>

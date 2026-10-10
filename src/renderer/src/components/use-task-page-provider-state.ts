@@ -8,6 +8,8 @@ import { isGitLabIssueFilter, isGitLabMRFilter } from './task-page-source-contex
 import type { GiteeTaskItem } from '../../../shared/gitee-issue-types'
 import type { GiteePullRequestInfo } from '../../../shared/gitee-pull-request-types'
 import type { GiteeProjectInfo } from '../../../shared/gitee-project-types'
+
+/** 保存任务页的 Gitee 列表、详情和新建表单状态，并向后续 hooks 暴露统一模型。 */
 export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel) {
   const {
     settings,
@@ -68,6 +70,7 @@ export function useTaskPageProviderState(model: TaskPageSourceAvailabilityModel)
   const [gitlabRefreshNonce, setGitlabRefreshNonce] = useState(0)
   // Why: separate from gitlabItems so the dialog target survives a list refresh that removes the item from the visible filter (e.g. closing an MR).
   const [gitlabDialogItem, setGitlabDialogItem] = useState<GitLabWorkItem | null>(null)
+  // Gitee 的三种模式共用刷新节奏，但分别保存列表，切换模式时不会丢失数据。
   const [giteeItems, setGiteeItems] = useState<GiteeTaskItem[]>([])
   const [giteeLoading, setGiteeLoading] = useState(false)
   const [giteeError, setGiteeError] = useState<string | null>(null)

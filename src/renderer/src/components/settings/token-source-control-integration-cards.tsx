@@ -240,6 +240,7 @@ export function GiteaIntegrationCard(): React.JSX.Element {
   )
 }
 
+/** 设置 Gitee 凭据、显示连接状态，并触发主进程预检刷新。 */
 export function GiteeIntegrationCard(): React.JSX.Element {
   const { statuses, unavailable, refresh } = usePreflightCardStatuses('gitee')
   const status = unavailable ? 'unavailable' : statuses.giteeStatus

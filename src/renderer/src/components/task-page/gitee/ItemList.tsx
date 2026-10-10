@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
 
 const zh = { id: '\u7f16\u53f7', title: '\u6807\u9898/\u4e0a\u4e0b\u6587', updated: '\u66f4\u65b0\u65f6\u95f4', loading: '\u6b63\u5728\u52a0\u8f7d Gitee \u8bae\u9898\u2026', empty: '\u6ca1\u6709\u627e\u5230\u5339\u914d\u7684 Gitee \u8bae\u9898', open: '\u5728 Gitee \u4e2d\u6253\u5f00' }
+/** 展示只包含 Gitee Issue 的精简列表。 */
 export function TaskPageGiteeItemList({ model }: { model: TaskPageComposerActionsModel }): React.JSX.Element {
   const { giteeItems, giteeLoading, giteeError, openGiteeDetail, giteeSearch } = model
   const searchText = giteeSearch

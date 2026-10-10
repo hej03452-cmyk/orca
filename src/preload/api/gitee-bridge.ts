@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron'
 import type { GiteeApi } from './gitee-api'
 
+/** 将 Gitee 主进程 IPC 映射为 window.api.gitee。 */
 export const giteeApi: GiteeApi = {
   connect: (args) => ipcRenderer.invoke('gitee:connect', args),
   disconnect: () => ipcRenderer.invoke('gitee:disconnect'),

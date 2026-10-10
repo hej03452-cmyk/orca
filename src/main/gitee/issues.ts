@@ -13,6 +13,7 @@ export type GiteeIssueListResult = {
   error?: { type: 'auth' | 'not_found' | 'unknown'; message: string }
 }
 
+/** 按状态和更新时间读取 Gitee Issue 列表。 */
 export async function listGiteeIssues(
   repoPath: string,
   limit = 20,
@@ -80,6 +81,7 @@ export async function listGiteeIssues(
   }
 }
 
+/** 读取单条 Issue，并补充其评论列表。 */
 export async function getGiteeIssue(
   repoPath: string,
   number: string,
@@ -137,6 +139,7 @@ export async function getGiteeIssue(
   return issue
 }
 
+/** 更新 Issue 标题、正文或开放状态。 */
 export async function updateGiteeIssue(
   repoPath: string,
   number: string,
@@ -169,6 +172,7 @@ export async function updateGiteeIssue(
   }
 }
 
+/** 向 Gitee Issue 发表评论并返回规范化评论。 */
 export async function addGiteeIssueComment(
   repoPath: string,
   number: string,
@@ -224,6 +228,7 @@ export type CreateGiteeIssueResult =
   | { ok: true; number: string; url: string; issue: GiteeIssueInfo | null }
   | { ok: false; error: string }
 
+/** 创建 Gitee Issue，并将返回内容转换为任务页模型。 */
 export async function createGiteeIssue(
   repoPath: string,
   input: { title: string; body?: string },
@@ -287,6 +292,7 @@ export async function createGiteeIssue(
   }
 }
 
+/** 从 Gitee 错误响应中提取用户可读的补充信息。 */
 async function readGiteeError(response: Response): Promise<string> {
   const body = await response.text().catch(() => '')
   if (!body) {
@@ -307,6 +313,7 @@ async function readGiteeError(response: Response): Promise<string> {
   }
 }
 
+/** 生成可选的 access_token 查询参数，兼容只读和写入接口。 */
 function tokenQuery(withQuestionMark = false): string {
   const token = getConfiguredGiteeToken()
   return token ? `${withQuestionMark ? '?' : '&'}access_token=${encodeURIComponent(token)}` : ''

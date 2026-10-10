@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { LoaderCircle } from 'lucide-react'
 
+/** 提供创建 Gitee 拉取请求所需的标题和分支表单。 */
 export function TaskPageGiteePullRequestDialog({ model }: { model: TaskPageComposerActionsModel }): React.JSX.Element {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the staged task model is augmented by the Gitee PR creation hook.
   const state = model as TaskPageComposerActionsModel & { handleCreateGiteePullRequest: () => Promise<void> }

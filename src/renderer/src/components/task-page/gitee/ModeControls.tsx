@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
 
+/** 将 Gitee 的 HTTPS/SSH 远程地址转换为网页仓库地址。 */
 function giteeRepositoryUrl(remoteUrl: string | null | undefined): string | null {
   const value = remoteUrl?.trim() ?? ''
   const scp = value.match(/^(?:[^@/:]+@)?(?:gitee\.com):([^\s]+?)(?:\.git)?$/i)
@@ -24,6 +25,7 @@ function giteeRepositoryUrl(remoteUrl: string | null | undefined): string | null
   }
 }
 
+/** 提供 Gitee 模式切换、仓库筛选和打开远程仓库的控件。 */
 export function TaskPageGiteeModeControls({
   model
 }: {

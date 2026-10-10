@@ -18,7 +18,9 @@ import {
 } from '../gitee/credential-connection'
 import { _resetPreflightCache } from './preflight'
 
+/** 注册 Gitee 凭据、Issue、PR 和项目相关的全部渲染器 IPC 入口。 */
 export function registerGiteeHandlers(store: Store): void {
+  // 所有 Gitee 写操作都在主进程执行，渲染器只通过受限 IPC 传递参数。
   ipcMain.handle('gitee:connect', async (_event, args: { token?: unknown; baseUrl?: unknown }) => {
     const result = await connectGitee(
       typeof args?.token === 'string' ? args.token : '',

@@ -2,6 +2,7 @@ import { CircleDot, FolderKanban, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { GiteeTaskItem } from '../../../../../shared/gitee-issue-types'
 
+/** 展示 Gitee 详情页的状态、负责人、标签和工作区元数据。 */
 export function GiteeDetailMeta({
   item,
   status

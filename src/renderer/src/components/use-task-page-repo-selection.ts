@@ -29,6 +29,8 @@ import type { TaskProvider } from '../../../shared/task-providers'
 import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import { getTaskPageRepoSourceContext } from './task-page-source-context'
+
+/** 根据任务来源筛选仓库，并恢复用户上次保存的仓库选择。 */
 export function useTaskPageRepoSelection(model: TaskPageStoreBindingsModel) {
   const {
     settings,
@@ -46,6 +48,7 @@ export function useTaskPageRepoSelection(model: TaskPageStoreBindingsModel) {
     if (pageData.taskSource !== 'gitee') {
       return eligible
     }
+    // Gitee 任务只能显示远程地址属于 gitee.com 的仓库，避免跨平台误请求。
     return eligible.filter((repo) => {
       const remoteUrl = repo.gitRemoteIdentity?.remoteUrl?.trim() ?? ''
       return /(?:^|[/:@])gitee\.com[/:]/i.test(remoteUrl)

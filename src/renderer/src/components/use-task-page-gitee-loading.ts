@@ -4,6 +4,7 @@ import type { GiteeTaskItem } from '../../../shared/gitee-issue-types'
 import type { GiteePullRequestInfo } from '../../../shared/gitee-pull-request-types'
 import type { GiteeProjectInfo } from '../../../shared/gitee-project-types'
 
+/** 根据当前模式和仓库选择加载 Gitee Issue、PR 或项目列表。 */
 export function useTaskPageGiteeLoading(model: TaskPageProviderMetadataModel) {
   const {
     selectedRepos,
@@ -30,6 +31,7 @@ export function useTaskPageGiteeLoading(model: TaskPageProviderMetadataModel) {
       setGiteeError(null)
       return
     }
+    // 仓库切换或组件卸载后，忽略已经返回的旧请求，避免覆盖新列表。
     let stale = false
     setGiteeLoading(true)
     setGiteeError(null)

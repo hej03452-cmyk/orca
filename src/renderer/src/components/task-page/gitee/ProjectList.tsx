@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 
+/** 展示 Gitee 项目或回退得到的里程碑列表。 */
 export function TaskPageGiteeProjectList({ model }: { model: TaskPageComposerActionsModel }): React.JSX.Element {
   const { giteeProjects, giteeLoading, giteeRefreshNonce, setGiteeRefreshNonce, giteeSearch, setGiteeSearch } = model
   const query = giteeSearch.replace(/\bis:(?:project|open|all)\b/gi, '').trim().toLocaleLowerCase()

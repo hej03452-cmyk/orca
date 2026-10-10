@@ -20,6 +20,7 @@ import {
   GITHUB_TASK_STICKY_TITLE_HEADER_CLASS
 } from '../../task-page-source-context'
 
+/** 以 GitHub 风格表格展示 Gitee Issue 或拉取请求列表。 */
 export function TaskPageGiteeList({
   model
 }: {
@@ -47,6 +48,7 @@ export function TaskPageGiteeList({
   )
   const grid = isPr ? GITHUB_PR_TASK_GRID_CLASS : GITHUB_TASK_GRID_CLASS
   const openItem = (item: (typeof rows)[number]) => {
+    // PR 和 Issue 的字段不同，这里统一成详情页可消费的任务项结构。
     if ('labels' in item) {
       openGiteeDetail(item)
       return

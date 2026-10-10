@@ -15,12 +15,16 @@ import {
 } from '../source-control/hosted-review-api-request'
 import { getConfiguredGiteeToken } from './credential-store'
 
+/** 读取当前 Orca 凭据存储中的 Gitee 令牌。 */
 function token(): string | null {
   return getConfiguredGiteeToken()
 }
+
+/** 判断当前是否存在可用于创建拉取请求的 Gitee 令牌。 */
 export function isGiteeReviewCreationAuthenticated(): boolean {
   return token() !== null
 }
+/** 校验分支和权限后创建 Gitee 拉取请求。 */
 export async function createGiteePullRequest(
   repoPath: string,
   input: CreateHostedReviewInput,

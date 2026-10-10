@@ -8,6 +8,7 @@ import type { TaskPageComposerActionsModel } from '../../use-task-page-composer-
 import { GiteeDetailMeta } from './DetailMeta'
 type Tab = 'conversation' | 'checks' | 'files'
 
+/** 展示 Gitee Issue/PR 详情，并处理状态更新和评论提交。 */
 export function TaskPageGiteeDetail({
   model
 }: {
@@ -31,6 +32,7 @@ export function TaskPageGiteeDetail({
     if (!itemNumber || !repoPath || !repoId) {
       return
     }
+    // 详情请求可能晚于用户返回列表，取消标记用于避免更新已离开的页面。
     let cancelled = false
     setLoading(true)
     setDetailError(null)

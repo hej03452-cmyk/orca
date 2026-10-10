@@ -7,17 +7,22 @@ import {
 import type { GiteeConnectionStatus, GiteeConnectResult } from '../../shared/gitee-credentials'
 
 const DEFAULT_API_BASE_URL = 'https://gitee.com/api/v5'
+
+/** 从不确定的 API 响应中安全读取字符串字段。 */
 function optionalString(value: unknown): string | null {
   return typeof value === 'string' ? value : null
 }
+/** 判断 API 响应是否为可读取字段的对象。 */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object'
 }
 
+/** 统一 API 地址格式，避免拼接请求路径时出现双斜杠。 */
 function normalizeBaseUrl(value: string | null | undefined): string {
   return (value?.trim() || DEFAULT_API_BASE_URL).replace(/\/+$/, '')
 }
 
+/** 验证访问令牌并将其加密保存到 Orca 凭据存储。 */
 export async function connectGitee(
   token: string,
   baseUrl?: string | null
@@ -48,10 +53,12 @@ export async function connectGitee(
   }
 }
 
+/** 删除本机保存的 Gitee 凭据，并让后续请求回到未连接状态。 */
 export function disconnectGitee(): void {
   clearStoredGiteeCredential()
 }
 
+/** 返回设置页需要展示的 Gitee 连接状态，不返回令牌本身。 */
 export function getGiteeConnectionStatus(): GiteeConnectionStatus {
   const token = getConfiguredGiteeToken()
   if (token) {

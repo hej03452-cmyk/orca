@@ -1,3 +1,4 @@
+/** Orca 统一使用的 Gitee Issue 数据。 */
 export type GiteeIssueInfo = {
   number: string
   title: string
@@ -12,6 +13,7 @@ export type GiteeIssueInfo = {
   commentCount?: number
 }
 
+/** Issue 评论的最小展示模型。 */
 export type GiteeIssueComment = {
   id: string
   author: string | null
@@ -20,6 +22,7 @@ export type GiteeIssueComment = {
   url: string
 }
 
+/** 任务页同时承载 Issue 和 PR 时使用的联合模型。 */
 export type GiteeTaskItem = GiteeIssueInfo & {
   repoId: string
   kind?: 'issue' | 'pr'

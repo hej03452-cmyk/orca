@@ -1,3 +1,4 @@
+/** Orca 统一使用的 Gitee 拉取请求数据。 */
 export type GiteePullRequestInfo = {
   number: number
   title: string

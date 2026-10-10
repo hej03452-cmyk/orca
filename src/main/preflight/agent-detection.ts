@@ -48,6 +48,7 @@ import {
 import { invalidateWslGuestEnvironment } from '../wsl/wsl-guest-environment'
 import { prunePreflightWslCache } from '../preflight-wsl-cache'
 
+/** 启动预检向设置页和任务页提供的工具、账号及 Gitee 连接状态快照。 */
 export type PreflightStatus = {
   git: { installed: boolean }
   gh: { installed: boolean; authenticated: boolean }
@@ -362,6 +363,7 @@ export async function runPreflightCheck(
   }
 }
 
+/** 并行检查本机工具和各代码托管平台连接状态。 */
 async function executePreflightCheck(
   force: boolean,
   context: PreflightRuntimeContext | undefined,

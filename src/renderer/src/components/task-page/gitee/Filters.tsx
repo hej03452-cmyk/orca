@@ -23,10 +23,12 @@ const labels: Record<GiteeFilter, string> = {
   all: '全部'
 }
 const filterValues: GiteeFilter[] = ['open', 'progressing', 'closed', 'rejected', 'all']
+/** 校验下拉菜单传入的字符串，避免把未知值写入筛选状态。 */
 function isFilter(value: string): value is GiteeFilter {
   return value in labels
 }
 
+/** 管理 Gitee Issue/PR 的状态筛选、搜索、新建和刷新操作。 */
 export function TaskPageGiteeFilters({
   model
 }: {
@@ -56,6 +58,7 @@ export function TaskPageGiteeFilters({
     return null
   }
   const create = (): void => {
+    // 只有 Issue 和单仓库 PR 模式支持新建，项目模式只读。
     if (giteeMode === 'issues') {
       model.setGiteeNewIssueOpen(true)
     }
